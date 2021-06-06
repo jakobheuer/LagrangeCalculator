@@ -8,5 +8,12 @@ Lagrange points are positions in space where objects sent there tend to stay put
   * 3D Object
   * Image, Colour encoded
 ## Requirements
-None, for now
+* [Numpy ](https://numpy.org/)
+*  [Pillow](https://pillow.readthedocs.io/en/stable/)
+*  Math
+
+
+##File Description
+* main.py - Contains the lagrange calculator. (Thus its called main)
+* pythagoras.py - Script used for trying out calculus and imaging. Shows distance to the middle of the image encoded in colour.
 
