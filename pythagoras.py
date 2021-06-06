@@ -27,5 +27,6 @@ for x in range(imgResX):
         c = data[x,y,0]
         data[x,y] = [max*c,max*c,max*c]
 
+data[0,254]=[255,0,255]
 img = Image.fromarray( data )       # Create a PIL image
 img.show()                      # View in default viewer
