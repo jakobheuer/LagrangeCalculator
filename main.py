@@ -4,6 +4,7 @@ import math
 
 
 au = 149597870700 #Astronomical unit [m]
+G = 6.67259e-11 #Gravitational constant
 
 #Resolution
 imgRes = 250
@@ -32,34 +33,44 @@ class Satellite:
 sat = Satellite()
 
 centrifugalForce = np.zeros( (imgResX,imgResY,3), dtype=np.float64)
-conservationForce = np.zeros( (imgResX,imgResY,3), dtype=np.float64) #möglicherweiße nutzlos weil 0 da keine beschleunigung
-
+gravitationalForce = np.zeros( (imgResX,imgResY,3), dtype=np.float64)
 data = np.zeros( (imgResX,imgResY,3), dtype=np.uint8 )
 
 for x in range(imgResX):
     for y in range(imgResY):
-        c = (math.sqrt(((abs(x - sun.x)) ** 2) + ((abs(y - sun.y)) ** 2))) * pixelDistanceMeters
+        c = (math.sqrt(((abs(x - sun.x)) ** 2) + ((abs(y - -sun.y)) ** 2))) * pixelDistanceMeters
         centrifugalForce[x,y,1] = -1*(sun.x - x)
         centrifugalForce[x, y, 2] = -1*(sun.y - -y)
-        if x == sun.x and -y == sun.y: #would be infinit
-            centrifugalForce[x,y,0] = 0
-            conservationForce[x,y,0] = 0
-            centrifugalForce[x, y, 1] = 0
-            centrifugalForce[x, y, 1] = 0
-        else:
-            centrifugalForce[x,y,0] = earth.mass * (earth.speed/c)
-            conservationForce[x, y,0] = sat.mass * (earth.angularVelocity)*c #F=m*a a=angular velocity * r
-            #centrifugalForce[x, y, 1] = (1 / math.sqrt((centrifugalForce[x, y, 1] ** 2) + (centrifugalForce[x, y, 2] ** 2))) * centrifugalForce[x, y, 1]
-            #centrifugalForce[x, y, 1] = (1 / math.sqrt((centrifugalForce[x, y, 1] ** 2) + (centrifugalForce[x, y, 2] ** 2))) * centrifugalForce[x, y, 2]
+        gravitationalForce[x, y, 1] = (sun.x - x)
+        gravitationalForce[x, y, 2] = (sun.y - -y)
+        #print("X: " +str(x)+", Y: "+str(y))
+        if x != sun.x or -y != sun.y: #would be infinit
+            centrifugalForce[x, y, 0] = earth.mass * (earth.speed / c)
+            betrag = math.sqrt((centrifugalForce[x, y, 1] ** 2) + ((centrifugalForce[x, y, 2] ** 2)))
+            centrifugalForce[x, y, 1] = (1 / betrag) * centrifugalForce[x, y, 1]  # X Normalisiert
+            centrifugalForce[x, y, 2] = (1 / betrag) * centrifugalForce[x, y, 2]  # Y Normalisiert
+
+            gravitationalForce[x, y, 0] = G * ((sun.mass * sat.mass) / (c ** 2))
+            betrag = math.sqrt((gravitationalForce[x, y, 1] ** 2) + ((gravitationalForce[x, y, 2] ** 2)))
+            gravitationalForce[x, y, 1] = (1 / betrag) * gravitationalForce[x, y, 1]  # X Normalisiert
+            gravitationalForce[x, y, 2] = (1 / betrag) * gravitationalForce[x, y, 2]  # Y Normalisiert
+
+for x in range(imgResX):
+    for y in range(imgResY):
+
+
 
 print(sun.x)
 print(sun.y)
 print(x)
 print(y)
 print(centrifugalForce[0,0])
+print(centrifugalForce[125,125])
 print(centrifugalForce[249,0])
 print(centrifugalForce[0,249])
 print(centrifugalForce[249,249])
+print(gravitationalForce[0,0])
+print(gravitationalForce[123,123])
 #Create Array
 #data = np.zeros( (imgResX,imgResY,3), dtype=np.uint8 )
 
