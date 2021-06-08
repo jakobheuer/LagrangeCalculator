@@ -30,10 +30,12 @@ earth = Earth()
 
 class Satellite:
     mass = 1000
+    #mass = 0.5e30
 sat = Satellite()
 
 centrifugalForce = np.zeros( (imgResX,imgResY,3), dtype=np.float64)
 gravitationalForce = np.zeros( (imgResX,imgResY,3), dtype=np.float64)
+totalForce = np.zeros( (imgResX,imgResY,3), dtype=np.float64)
 data = np.zeros( (imgResX,imgResY,3), dtype=np.uint8 )
 
 for x in range(imgResX):
@@ -44,33 +46,75 @@ for x in range(imgResX):
         gravitationalForce[x, y, 1] = (sun.x - x)
         gravitationalForce[x, y, 2] = (sun.y - -y)
         #print("X: " +str(x)+", Y: "+str(y))
-        if x != sun.x or -y != sun.y: #would be infinit
+        if x != sun.x or -y != sun.y: #would be infinite
             centrifugalForce[x, y, 0] = earth.mass * (earth.speed / c)
             betrag = math.sqrt((centrifugalForce[x, y, 1] ** 2) + ((centrifugalForce[x, y, 2] ** 2)))
             centrifugalForce[x, y, 1] = (1 / betrag) * centrifugalForce[x, y, 1]  # X Normalisiert
             centrifugalForce[x, y, 2] = (1 / betrag) * centrifugalForce[x, y, 2]  # Y Normalisiert
+            centrifugalForce[x, y, 1] = centrifugalForce[x,y,1] * centrifugalForce[x,y,0]
+            centrifugalForce[x, y, 2] = centrifugalForce[x,y,2] * centrifugalForce[x,y,0]
 
             gravitationalForce[x, y, 0] = G * ((sun.mass * sat.mass) / (c ** 2))
             betrag = math.sqrt((gravitationalForce[x, y, 1] ** 2) + ((gravitationalForce[x, y, 2] ** 2)))
             gravitationalForce[x, y, 1] = (1 / betrag) * gravitationalForce[x, y, 1]  # X Normalisiert
             gravitationalForce[x, y, 2] = (1 / betrag) * gravitationalForce[x, y, 2]  # Y Normalisiert
+            gravitationalForce[x, y, 1] = gravitationalForce[x,y,1] * gravitationalForce[x,y,0]
+            gravitationalForce[x, y, 2] = gravitationalForce[x, y, 2] * gravitationalForce[x, y, 0]
+
+            totalForce[x, y, 1] = gravitationalForce[x, y, 1] + centrifugalForce[x, y, 1]
+            totalForce[x, y, 2] = gravitationalForce[x, y, 2] + centrifugalForce[x, y, 2]
+            totalForce[x, y, 0] = math.sqrt((totalForce[x, y, 1]**2) + (totalForce[x, y, 2]**2))
+
+max = np.max(gravitationalForce)
+max=255/max
 
 for x in range(imgResX):
     for y in range(imgResY):
+        c = gravitationalForce[x, y, 0]
+        d = gravitationalForce[x, y, 1]
+        e = gravitationalForce[x, y, 2]
+        data[x, y] = [max * c, max * d, max * e]
+img = Image.fromarray( data )       # Create a PIL image
+img.show()                      # View in default viewer
+max = np.max(centrifugalForce)
+max=255/max
 
+for x in range(imgResX):
+    for y in range(imgResY):
+        c = centrifugalForce[x, y, 0]
+        d = centrifugalForce[x, y, 1]
+        e = centrifugalForce[x, y, 2]
+        data[x, y] = [max * c, max * d, max * e]
+img = Image.fromarray( data )       # Create a PIL image
+img.show()                      # View in default viewer
+max = np.max(totalForce)
+max=255/max
 
+for x in range(imgResX):
+    for y in range(imgResY):
+        c = totalForce[x, y, 0]
+        d = totalForce[x, y, 1]
+        e = totalForce[x, y, 2]
+        data[x, y] = [max * c, max * d, max * e]
 
-print(sun.x)
-print(sun.y)
-print(x)
-print(y)
-print(centrifugalForce[0,0])
-print(centrifugalForce[125,125])
-print(centrifugalForce[249,0])
-print(centrifugalForce[0,249])
-print(centrifugalForce[249,249])
-print(gravitationalForce[0,0])
-print(gravitationalForce[123,123])
+img = Image.fromarray( data )       # Create a PIL image
+img.show()                      # View in default viewer
+#print(sun.y)
+#print(sun.x)
+#print(x)
+#print(y)
+#print(centrifugalForce[0,0])
+#print(centrifugalForce[125,125])
+#print(centrifugalForce[249,0])
+#print(centrifugalForce[0,249])
+#print(centrifugalForce[249,249])
+#print(gravitationalForce[0,0])
+#print(gravitationalForce[123,123])
+#print("Total:")
+#print(totalForce[0,0])
+#print(totalForce[0,249])
+#print(totalForce[249,249])
+
 #Create Array
 #data = np.zeros( (imgResX,imgResY,3), dtype=np.uint8 )
 
@@ -79,5 +123,5 @@ print(gravitationalForce[123,123])
         #c = data[x,y,0]
         #data[x,y] = [max*c,max*c,max*c]
 
-#img = Image.fromarray( data )       # Create a PIL image
-#img.show()                      # View in default viewer
+img = Image.fromarray( data )       # Create a PIL image
+img.show()                      # View in default viewer
