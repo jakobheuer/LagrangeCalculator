@@ -47,7 +47,7 @@ for x in range(imgResX):
         gravitationalForce[x, y, 2] = (sun.y - -y)
         #print("X: " +str(x)+", Y: "+str(y))
         if x != sun.x or -y != sun.y: #would be infinite
-            centrifugalForce[x, y, 0] = earth.mass * (earth.speed / c)
+            centrifugalForce[x, y, 0] = sat.mass * (((earth.angularVelocity*c)**2) / c)
             betrag = math.sqrt((centrifugalForce[x, y, 1] ** 2) + ((centrifugalForce[x, y, 2] ** 2)))
             centrifugalForce[x, y, 1] = (1 / betrag) * centrifugalForce[x, y, 1]  # X Normalisiert
             centrifugalForce[x, y, 2] = (1 / betrag) * centrifugalForce[x, y, 2]  # Y Normalisiert
@@ -65,40 +65,51 @@ for x in range(imgResX):
             totalForce[x, y, 2] = gravitationalForce[x, y, 2] + centrifugalForce[x, y, 2]
             totalForce[x, y, 0] = math.sqrt((totalForce[x, y, 1]**2) + (totalForce[x, y, 2]**2))
 
+
 max = np.max(gravitationalForce)
 max=255/max
 
 for x in range(imgResX):
     for y in range(imgResY):
         c = gravitationalForce[x, y, 0]
-        d = gravitationalForce[x, y, 1]
-        e = gravitationalForce[x, y, 2]
-        data[x, y] = [max * c, max * d, max * e]
+        #d = gravitationalForce[x, y, 1]
+        #e = gravitationalForce[x, y, 2]
+        data[x, y] = [max * c, 0, 0]
 img = Image.fromarray( data )       # Create a PIL image
-img.show()                      # View in default viewer
+img.show()                      #View in default viewer
+
+
 max = np.max(centrifugalForce)
 max=255/max
 
 for x in range(imgResX):
     for y in range(imgResY):
         c = centrifugalForce[x, y, 0]
-        d = centrifugalForce[x, y, 1]
-        e = centrifugalForce[x, y, 2]
-        data[x, y] = [max * c, max * d, max * e]
+        #d = centrifugalForce[x, y, 1]
+        #e = centrifugalForce[x, y, 2]
+        data[x, y] = [max * c, 0, 0]
 img = Image.fromarray( data )       # Create a PIL image
-img.show()                      # View in default viewer
+img.show()     # View in default viewer
+
 max = np.max(totalForce)
 max=255/max
 
 for x in range(imgResX):
     for y in range(imgResY):
         c = totalForce[x, y, 0]
-        d = totalForce[x, y, 1]
-        e = totalForce[x, y, 2]
-        data[x, y] = [max * c, max * d, max * e]
-
+        #d = totalForce[x, y, 1]
+        #e = totalForce[x, y, 2]
+        data[x, y] = [max * c, 0, 0]
+        if x == earth.x and -y == earth.y:
+            data[x, y] = [255, 255, 255]
+            print(earth.y)
+            print(earth.x)
+            print(x)
+            print(y)
+data[20, 0] = [255, 255, 0]
 img = Image.fromarray( data )       # Create a PIL image
 img.show()                      # View in default viewer
+
 #print(sun.y)
 #print(sun.x)
 #print(x)
@@ -123,5 +134,5 @@ img.show()                      # View in default viewer
         #c = data[x,y,0]
         #data[x,y] = [max*c,max*c,max*c]
 
-img = Image.fromarray( data )       # Create a PIL image
-img.show()                      # View in default viewer
+# img = Image.fromarray( data )       # Create a PIL image
+# img.show()                      # View in default viewer
