@@ -13,7 +13,7 @@ Lagrange points are positions in space where objects sent there tend to stay put
 *  Math
 
 
-##File Description
+## File Description
 * main.py - Contains the lagrange calculator. (Thus its called main)
 * pythagoras.py - Script used for trying out calculus and imaging. Shows distance to the middle of the image encoded in colour.
 
